@@ -1050,7 +1050,7 @@ int* play(CARD_ITERATOR begin, CARD_ITERATOR end)
 		myResponse.push_back(temp);
 	}
 	response.push_back(myResponse);
-	int length = response.size();
+	int length = myResponse.size();
 	int* ans = new int[length];
 	for (int i = 0; i < length; ++i) {
 		ans[i] = myResponse[i];
@@ -2848,7 +2848,10 @@ int* play_decide()
 	// 做出决策
 	if (lastValidCombo.comboType <= CardComboType::PASS) {
 		CardCombo myAction = Play_Strategy();
-		return play(myAction.cards.begin(), myAction.cards.end());
+		if (checkValid(myAction.cards.begin(), myAction.cards.end(), lastValidCombo.cards.begin(), lastValidCombo.cards.end()))
+			return play(myAction.cards.begin(), myAction.cards.end());
+		else
+			return nullptr;
 	}
 	else {
 		lastValidCombo.GenerateNotPassValid(myCards.begin(), myCards.end());
@@ -2865,8 +2868,10 @@ int* play_decide()
 		//	(lastValidCombo.comboType == CardComboType::PASS && BestSolve.comboType != CardComboType::INVALID));
 
 		//// 决策结束，输出结果（你只需修改以上部分）
-
-		return play(BestSolve.cards.begin(), BestSolve.cards.end());
+		if (checkValid(BestSolve.cards.begin(), BestSolve.cards.end(), lastValidCombo.cards.begin(), lastValidCombo.cards.end()))
+			return play(BestSolve.cards.begin(), BestSolve.cards.end());
+		else
+			return nullptr;
 	}
 
 }
@@ -2881,7 +2886,10 @@ int* play_decide2()
 	// 做出决策
 	if (lastValidCombo2.comboType <= CardComboType::PASS) {
 		CardCombo myAction = Play_Strategy2();
-		return play(myAction.cards.begin(), myAction.cards.end());
+		if (checkValid(myAction.cards.begin(), myAction.cards.end(), lastValidCombo2.cards.begin(), lastValidCombo2.cards.end()))
+			return play(myAction.cards.begin(), myAction.cards.end());
+		else
+			return nullptr;
 	}
 	else {
 		lastValidCombo2.GenerateNotPassValid2(myCards2.begin(), myCards2.end());
@@ -2899,7 +2907,10 @@ int* play_decide2()
 
 		//// 决策结束，输出结果（你只需修改以上部分）
 
-		return play(BestSolve2.cards.begin(), BestSolve2.cards.end());
+		if (checkValid(BestSolve2.cards.begin(), BestSolve2.cards.end(), lastValidCombo2.cards.begin(), lastValidCombo2.cards.end()))
+			return play(BestSolve2.cards.begin(), BestSolve2.cards.end());
+		else
+			return nullptr;
 	}
 
 }
