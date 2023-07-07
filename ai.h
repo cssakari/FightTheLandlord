@@ -592,7 +592,7 @@ short cardstatus[55] = { 0 }; //0未出,1已出,-1为自己的未出牌,-3为明
 //还没出且不在自己手上的牌
 vector<Card> Remaining;
 
-bool ifIcanbeBeaten(CardCombo b)
+bool ifICanBeat(CardCombo b)
 {
 	if (b.comboType >= CardComboType::PLANE) {
 		return 0;
@@ -712,8 +712,8 @@ void play_read()
 		}
 
 		//上家
-		int player = whoInHistory[1];	// 是谁出的牌
-		vector<Card> playedCards;
+		player = whoInHistory[1];	// 是谁出的牌
+		playedCards.clear();
 		for (unsigned _ = 0; _ < history[i].up.size(); _++) // 循环枚举这个人出的所有牌
 		{
 			int card = history[i].up[_]; // 这里是出的一张牌
@@ -811,7 +811,7 @@ int* play(CARD_ITERATOR begin, CARD_ITERATOR end)
 	int length = response.size();
 	int* ans = new int[length];
 	for (int i = 0; i < length; ++i) {
-		ans[i] = response[i];
+		ans[i] = myResponse[i];
 	}
 	return ans;
 }
@@ -930,7 +930,7 @@ bool ifToWin(vector<CardCombo*> t) {
 	int cnt = 0;
 	vector<CardCombo*> Beaten;
 	for (vector<CardCombo*>::iterator it = t.begin(); it != t.end(); ++it) {
-		if (ifIcanbeBeaten(*(*it))) {
+		if (ifICanBeat(*(*it))) {
 			cnt++;
 			Beaten.push_back(*it);
 		}
@@ -1425,7 +1425,7 @@ void GenerateBestCombo(CardCombo t) {
 	vector<CardCombo*> t1;
 	FindBestCombo(t1, 0);
 	Split_Combo();
-	if (t.comboType != CardComboType::PASS && !ifIcanbeBeaten(t)) {
+	if (t.comboType != CardComboType::PASS && !ifICanBeat(t)) {
 		MAX += 20;
 		if (ifToWin(BestCombo)) {
 			MAX += 500;
@@ -1493,7 +1493,7 @@ CardCombo& Play_Strategy() {
 		}
 		for (; it_combo != BestCombo.end(); ++it_combo) {
 			if ((*it_combo)->comboType == CardComboType::STRAIGHT) {
-				if (myPosition == landlordPosition && ifIcanbeBeaten(**it_combo) || ((*it_combo)->cards.size() > 7 || (*it_combo)->comboLevel == MAX_STRAIGHT_LEVEL)) {//1处加要不起的tag
+				if (myPosition == landlordPosition && ifICanBeat(**it_combo) || ((*it_combo)->cards.size() > 7 || (*it_combo)->comboLevel == MAX_STRAIGHT_LEVEL)) {//1处加要不起的tag
 					return *BestCombo[0];
 				}
 				else {//若要的起考虑回手
@@ -1508,7 +1508,7 @@ CardCombo& Play_Strategy() {
 				}
 			}
 			else if ((*it_combo)->comboType >= CardComboType::TRIPLET) {
-				if (myPosition == landlordPosition && ifIcanbeBeaten(**it_combo)) {//加要不起的tag
+				if (myPosition == landlordPosition && ifICanBeat(**it_combo)) {//加要不起的tag
 					return *BestCombo[0];
 				}
 				else {//若要的起考虑回手
