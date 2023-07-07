@@ -1763,12 +1763,13 @@ failure:
 
 //判断是否合法
 template <typename CARD_ITERATOR>
-bool checkValid(CARD_ITERATOR begin, CARD_ITERATOR end) {
-	CardCombo solve(begin, end);
-	if ((BestSolve.comboType != CardComboType::INVALID) ||// 是合法牌
-		(lastValidCombo.comboType != CardComboType::PASS && BestSolve.comboType == CardComboType::PASS) ||// 在上家没过牌的时候过牌
-		(lastValidCombo.comboType != CardComboType::PASS && lastValidCombo.canBeBeatenBy(BestSolve)) ||// 在上家没过牌的时候出打得过的牌
-		(lastValidCombo.comboType == CardComboType::PASS && BestSolve.comboType != CardComboType::INVALID))// 在上家过牌的时候出合法牌
+bool checkValid(CARD_ITERATOR begin1, CARD_ITERATOR end1, CARD_ITERATOR begin2, CARD_ITERATOR end2) {
+	CardCombo solve(begin1, end1);
+	CardCombo lastCombo(begin2, end2);
+	if ((solve.comboType != CardComboType::INVALID) ||// 是合法牌
+		(lastCombo.comboType != CardComboType::PASS && solve.comboType == CardComboType::PASS) ||// 在上家没过牌的时候过牌
+		(lastCombo.comboType != CardComboType::PASS && lastCombo.canBeBeatenBy(solve)) ||// 在上家没过牌的时候出打得过的牌
+		(lastCombo.comboType == CardComboType::PASS && solve.comboType != CardComboType::INVALID))// 在上家过牌的时候出合法牌
 		return true;
 	else
 		return false;
