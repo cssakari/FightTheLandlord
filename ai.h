@@ -552,12 +552,7 @@ struct CardCombo
 		return CardCombo();
 	}
 
-	void debugPrint()
-	{
-#ifndef _BOTZONE_ONLINE
-		std::cout << "【" << cardComboStrings[(int)comboType] << "共" << cards.size() << "张，大小序" << comboLevel << "】";
-#endif
-	}
+
 };
 
 /* 状态 */
@@ -1676,17 +1671,17 @@ void CardCombo::GenerateNotPassValid(CARD_ITERATOR begin, CARD_ITERATOR end) con
 						GenerateBestCombo(CardCombo(solve.begin(), solve.end()));
 
 
-						//?生成下一种组合序列
+						// 生成下一种组合序列
 						int k = m - 1;
 						++B[k];
-						while (B[k] > n - m + k && k >= 0)//?对应位超过最大值
+						while (B[k] > n - m + k && k >= 0)// 对应位超过最大值
 						{
 							k--;
 							if (k >= 0)
 								++B[k];
 						}
 
-						//?发生进位后，后续位在前一位基础上加1
+						// 发生进位后，后续位在前一位基础上加1
 					}
 				}
 				else
