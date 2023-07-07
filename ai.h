@@ -109,6 +109,42 @@ string cardComboStrings[] = {
 	"INVALID" };
 #endif
 
+// 将1-13表示方式的序号转换为3333表示方式的序号
+int convert_encoding1_to_encoding2(int n) {
+	if (n >= 0 && n <= 51) {
+		int rank = n % 13 + 1;
+		int suit = n / 13;
+		return (rank - 3) * 4 + suit;
+	}
+	else if (n == 52) {
+		return 52;
+	}
+	else if (n == 53) {
+		return 53;
+	}
+	else {
+		return -1;
+	}
+}
+
+// 将3333表示方式的序号转换为1-13表示方式的序号
+int convert_encoding2_to_encoding1(int n) {
+	if (n >= 0 && n <= 51) {
+		int rank = n / 4 + 3;
+		int suit = n % 4;
+		return rank - 1 + suit * 13;
+	}
+	else if (n == 52) {
+		return 52;
+	}
+	else if (n == 53) {
+		return 53;
+	}
+	else {
+		return -1;
+	}
+}
+
 // 用0~53这54个整数表示唯一的一张牌
 using Card = short;
 constexpr Card card_joker = 52;
