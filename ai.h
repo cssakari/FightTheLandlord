@@ -788,10 +788,9 @@ void play_read()
 }
 
 /**
-* 输出叫分（0, 1, 2, 3 四种之一）
+* 输出叫分0,1,2,3
 */
 int bid(int value) {
-	//	result["response"] = value;
 	return value;
 }
 
@@ -1740,7 +1739,8 @@ bool checkValid(CARD_ITERATOR begin, CARD_ITERATOR end) {
 
 }
 
-int bid_decide() {
+//true叫 false不叫
+bool bid_decide() {
 	stage = Stage::BIDDING;
 	bid_read();
 	// 做出决策
@@ -1748,13 +1748,14 @@ int bid_decide() {
 	Bid_Strategy(p, 0);
 	unsigned int i = 0;
 	for (; i < bidInput.size(); i++) {
-		if (bidValue <= bidInput[i]) {
-			return bid(0);
+		/*if (bidValue <= bidInput[i]) {*/
+		if (bidInput[i] == 1) {
+			return false;
 			break;
 		}
 	}
 	if (i == bidInput.size())
-		return bid(bidValue);
+		return bid(bidValue) == 3 ? true : false;
 }
 
 int* play_decide()
