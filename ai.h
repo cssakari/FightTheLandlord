@@ -781,7 +781,7 @@ int* play_decide1()
 {
 	turn1++;
 	srand(time(nullptr));
-	stage1 == Stage::PLAYING;
+	stage1 = Stage::PLAYING;
 	play_read1();
 
 	CardCombo myAction = Play_Strategy1(lastValidCombo1.cards.begin(), lastValidCombo1.cards.end());
@@ -806,7 +806,7 @@ int* play_decide2()
 {
 	turn2++;
 	srand(time(nullptr));
-	stage2 == Stage::PLAYING;
+	stage2 = Stage::PLAYING;
 	play_read2();
 
 	CardCombo myAction = Play_Strategy2(lastValidCombo2.cards.begin(), lastValidCombo2.cards.end());
