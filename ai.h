@@ -23,19 +23,24 @@ using std::min;
 constexpr int PLAYER_COUNT = 3;
 //序号0，1，2
 
-vector<int> own2;//我的牌
+//游戏开始阶段修改
+vector<int> own1;//我的牌
 vector<int> own2;//我的牌
 int landlord;//地主序号
-int pos2;//我的序号
+int pos1;//我的序号
 int pos2;//我的序号
 int publiccard[3];//地主公开的牌
+//每一轮修改
+vector<int> last1;//上一家出牌
+vector<int> last2;//上一家出牌
 
 
 
+
+
+//不用修改
+int turn1 = 0;
 int turn2 = 0;
-int turn2 = 0;
-
-
 enum class Stage
 {
 	BIDDING, // 叫分阶段
@@ -581,7 +586,6 @@ struct CardCombo
 		for (Level i = 0; i < level_joker; i++)
 			if (counts[i] == 4 && (comboType != CardComboType::BOMB || i > packs[0].level)) // 如果对方是炸弹，能炸的过才行
 			{
-				// 还真可以啊……
 				Card bomb[] = { Card(i * 4), Card(i * 4 + 1), Card(i * 4 + 2), Card(i * 4 + 3) };
 				return CardCombo(bomb, bomb + 4);
 			}
@@ -603,8 +607,8 @@ struct CardCombo
 /* 状态 */
 
 // 我的牌有哪些
-set<Card> myCards2;
-short mycounts2[MAX_LEVEL + 1] = {};
+set<Card> myCards1;
+short mycounts1[MAX_LEVEL + 1] = {};
 set<Card> myCards2;
 short mycounts2[MAX_LEVEL + 1] = {};
 //创建一个牌池
@@ -612,19 +616,96 @@ short mycounts2[MAX_LEVEL + 1] = {};
 set<Card> landlordPublicCards;
 
 // 当前要出的牌需要大过谁
-CardCombo lastValidCombo2;
+CardCombo lastValidCombo1;
 CardCombo lastValidCombo2;
 
 // 我是几号玩家（0-地主，1-农民甲，2-农民乙）
-int myPosition2;
+int myPosition1;
 int myPosition2;
 
 // 地主位置
 int landlordPosition = -1;
 
 // 阶段
+Stage stage1 = Stage::BIDDING;
 Stage stage2 = Stage::BIDDING;
-Stage stage2 = Stage::BIDDING;
+
+
+
+void play_read1()
+{
+	// 首先处理第一回合，得知自己是谁、有哪些牌
+	if (turn1 == 1) {
+		for (unsigned i = 0; i < own1.size(); i++) {
+			int t = own1[i];
+			myCards1.insert(t);
+			mycounts1[card2level(t)]++;
+		}
+		for (unsigned i = 0; i < 3; i++)
+		{
+			landlordPublicCards.insert(publiccard[i]);
+			if (landlordPosition == myPosition1) {
+				myCards1.insert(publiccard[i]);
+				mycounts1[card2level(publiccard[i])]++;
+			}
+		}
+	}
+	else
+		CardCombo lastValidCombo1(last1.begin(), last1.end());
+}
+
+
+
+/**
+* 输出打牌决策，begin是迭代器起点，end是迭代器终点
+* CARD_ITERATOR是Card（即short）类型的迭代器
+*/
+template <typename CARD_ITERATOR>
+int* play1(CARD_ITERATOR begin, CARD_ITERATOR end)
+{
+	vector<int>myResponse;
+	for (; begin != end; begin++) {
+		int temp = *begin;
+		myCards1.erase(temp);
+		mycounts1[card2level(temp)]--;
+		temp = int(*begin);
+		myResponse.push_back(temp);
+	}
+
+	int length = myResponse.size();
+
+	int* ans = new int[length];
+	for (int i = 0; i < length; ++i) {
+		ans[i] = myResponse[i];
+	}
+	return ans;
+}
+
+
+template <typename CARD_ITERATOR>
+CardCombo& Play_Strategy1(CARD_ITERATOR begin, CARD_ITERATOR end) {
+	CardCombo lastCombo(begin, end);
+	return lastCombo.findFirstValid(myCards1.begin(), myCards1.end());
+}
+
+
+//判断是否合法
+template <typename CARD_ITERATOR>
+bool checkValid(CARD_ITERATOR begin1, CARD_ITERATOR end1, CARD_ITERATOR begin2, CARD_ITERATOR end2) {
+	CardCombo solve(begin1, end1);
+	CardCombo lastCombo(begin2, end2);
+	if ((solve.comboType != CardComboType::INVALID) ||// 是合法牌
+		(lastCombo.comboType != CardComboType::PASS && solve.comboType == CardComboType::PASS) ||// 在上家没过牌的时候过牌
+		(lastCombo.comboType != CardComboType::PASS && lastCombo.canBeBeatenBy(solve)) ||// 在上家没过牌的时候出打得过的牌
+		(lastCombo.comboType == CardComboType::PASS && solve.comboType != CardComboType::INVALID))// 在上家过牌的时候出合法牌
+		return true;
+	else
+		return false;
+
+}
+
+
+
 
 
 
@@ -646,6 +727,8 @@ void play_read2()
 			}
 		}
 	}
+	else
+		CardCombo lastValidCombo2(last2.begin(), last2.end());
 }
 
 
@@ -679,22 +762,33 @@ int* play2(CARD_ITERATOR begin, CARD_ITERATOR end)
 template <typename CARD_ITERATOR>
 CardCombo& Play_Strategy2(CARD_ITERATOR begin, CARD_ITERATOR end) {
 	CardCombo lastCombo(begin, end);
-	return lastCombo.findFirstValid();
+	return lastCombo.findFirstValid(myCards2.begin(), myCards2.end());
 }
 
 
-//判断是否合法
-template <typename CARD_ITERATOR>
-bool checkValid(CARD_ITERATOR begin1, CARD_ITERATOR end1, CARD_ITERATOR begin2, CARD_ITERATOR end2) {
-	CardCombo solve(begin1, end1);
-	CardCombo lastCombo(begin2, end2);
-	if ((solve.comboType != CardComboType::INVALID) ||// 是合法牌
-		(lastCombo.comboType != CardComboType::PASS && solve.comboType == CardComboType::PASS) ||// 在上家没过牌的时候过牌
-		(lastCombo.comboType != CardComboType::PASS && lastCombo.canBeBeatenBy(solve)) ||// 在上家没过牌的时候出打得过的牌
-		(lastCombo.comboType == CardComboType::PASS && solve.comboType != CardComboType::INVALID))// 在上家过牌的时候出合法牌
+
+//true叫 false不叫
+bool bid_decide1() {
+	stage1 = Stage::BIDDING;
+	int flag = rand() / double(RAND_MAX);
+	if (flag > 0.5)
 		return true;
 	else
 		return false;
+}
+
+int* play_decide1()
+{
+	turn1++;
+	srand(time(nullptr));
+	stage1 == Stage::PLAYING;
+	play_read1();
+
+	CardCombo myAction = Play_Strategy1(lastValidCombo1.cards.begin(), lastValidCombo1.cards.end());
+	if ((myAction.comboType == CardComboType::PASS) || !checkValid(myAction.cards.begin(), myAction.cards.end(), lastValidCombo1.cards.begin(), lastValidCombo1.cards.end()))
+		return nullptr;
+	else
+		return play1(myAction.cards.begin(), myAction.cards.end());
 
 }
 
@@ -722,6 +816,5 @@ int* play_decide2()
 		return play2(myAction.cards.begin(), myAction.cards.end());
 
 }
-
 
 #endif
