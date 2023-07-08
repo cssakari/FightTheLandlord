@@ -1,6 +1,6 @@
 #ifndef AI_H
 #define AI_H
-#include <iostream>
+
 using namespace std;
 
 #include <iostream>
@@ -10,8 +10,6 @@ using namespace std;
 #include <cstring> // 注意memset是cstring里的
 #include <algorithm>
 #include <vector>
-
-using namespace std;
 
 using std::set;
 using std::sort;
@@ -615,9 +613,7 @@ short mycounts2[MAX_LEVEL + 1] = {};
 // 地主明示的牌有哪些
 set<Card> landlordPublicCards;
 
-// 当前要出的牌需要大过谁
-CardCombo lastValidCombo1;
-CardCombo lastValidCombo2;
+
 
 // 我是几号玩家（0-地主，1-农民甲，2-农民乙）
 int myPosition1;
@@ -632,27 +628,6 @@ Stage stage2 = Stage::BIDDING;
 
 
 
-void play_read1()
-{
-	// 首先处理第一回合，得知自己是谁、有哪些牌
-	if (turn1 == 1) {
-		for (unsigned i = 0; i < own1.size(); i++) {
-			int t = own1[i];
-			myCards1.insert(t);
-			mycounts1[card2level(t)]++;
-		}
-		for (unsigned i = 0; i < 3; i++)
-		{
-			landlordPublicCards.insert(publiccard[i]);
-			if (landlordPosition == myPosition1) {
-				myCards1.insert(publiccard[i]);
-				mycounts1[card2level(publiccard[i])]++;
-			}
-		}
-	}
-	else
-		CardCombo lastValidCombo1(last1.begin(), last1.end());
-}
 
 
 
@@ -665,11 +640,11 @@ int* play1(CARD_ITERATOR begin, CARD_ITERATOR end)
 {
 	vector<int>myResponse;
 	for (; begin != end; begin++) {
-		int temp = *begin;
+		Card temp = *begin;
 		myCards1.erase(temp);
 		mycounts1[card2level(temp)]--;
-		temp = int(*begin);
-		myResponse.push_back(temp);
+		int tp = int(*begin);
+		myResponse.push_back(tp);
 	}
 
 	int length = myResponse.size();
@@ -682,11 +657,6 @@ int* play1(CARD_ITERATOR begin, CARD_ITERATOR end)
 }
 
 
-template <typename CARD_ITERATOR>
-CardCombo& Play_Strategy1(CARD_ITERATOR begin, CARD_ITERATOR end) {
-	CardCombo lastCombo(begin, end);
-	return lastCombo.findFirstValid(myCards1.begin(), myCards1.end());
-}
 
 
 //判断是否合法
@@ -704,35 +674,6 @@ bool checkValid(CARD_ITERATOR begin1, CARD_ITERATOR end1, CARD_ITERATOR begin2, 
 
 }
 
-
-
-
-
-
-void play_read2()
-{
-	// 首先处理第一回合，得知自己是谁、有哪些牌
-	if (turn2 == 1) {
-		for (unsigned i = 0; i < own2.size(); i++) {
-			int t = own2[i];
-			myCards2.insert(t);
-			mycounts2[card2level(t)]++;
-		}
-		for (unsigned i = 0; i < 3; i++)
-		{
-			landlordPublicCards.insert(publiccard[i]);
-			if (landlordPosition == myPosition2) {
-				myCards2.insert(publiccard[i]);
-				mycounts2[card2level(publiccard[i])]++;
-			}
-		}
-	}
-	else
-		CardCombo lastValidCombo2(last2.begin(), last2.end());
-}
-
-
-
 /**
 * 输出打牌决策，begin是迭代器起点，end是迭代器终点
 * CARD_ITERATOR是Card（即short）类型的迭代器
@@ -742,11 +683,11 @@ int* play2(CARD_ITERATOR begin, CARD_ITERATOR end)
 {
 	vector<int>myResponse;
 	for (; begin != end; begin++) {
-		int temp = *begin;
+		Card temp = *begin;
 		myCards2.erase(temp);
 		mycounts2[card2level(temp)]--;
-		temp = int(*begin);
-		myResponse.push_back(temp);
+		int tp = int(*begin);
+		myResponse.push_back(tp);
 	}
 
 	int length = myResponse.size();
@@ -758,12 +699,6 @@ int* play2(CARD_ITERATOR begin, CARD_ITERATOR end)
 	return ans;
 }
 
-
-template <typename CARD_ITERATOR>
-CardCombo& Play_Strategy2(CARD_ITERATOR begin, CARD_ITERATOR end) {
-	CardCombo lastCombo(begin, end);
-	return lastCombo.findFirstValid(myCards2.begin(), myCards2.end());
-}
 
 
 
@@ -779,17 +714,33 @@ bool bid_decide1() {
 
 int* play_decide1()
 {
+
+	if (turn1 == 0) {
+		for (unsigned i = 0; i < own1.size(); i++) {
+			int t = own1[i];
+			myCards1.insert(t);
+			mycounts1[card2level(t)]++;
+		}
+		for (unsigned i = 0; i < 3; i++)
+		{
+			landlordPublicCards.insert(publiccard[i]);
+			if (landlordPosition == myPosition1) {
+				myCards1.insert(publiccard[i]);
+				mycounts1[card2level(publiccard[i])]++;
+			}
+		}
+	}
+
 	turn1++;
+	CardCombo lastValidCombo1(last1.begin(), last1.end());
+
 	srand(time(nullptr));
 	stage1 = Stage::PLAYING;
-	play_read1();
-
-	CardCombo myAction = Play_Strategy1(lastValidCombo1.cards.begin(), lastValidCombo1.cards.end());
+	CardCombo myAction = lastValidCombo1.findFirstValid(myCards1.begin(), myCards1.end());
 	if ((myAction.comboType == CardComboType::PASS) || !checkValid(myAction.cards.begin(), myAction.cards.end(), lastValidCombo1.cards.begin(), lastValidCombo1.cards.end()))
 		return nullptr;
 	else
 		return play1(myAction.cards.begin(), myAction.cards.end());
-
 }
 
 //true叫 false不叫
@@ -804,12 +755,27 @@ bool bid_decide2() {
 
 int* play_decide2()
 {
+	if (turn2 == 0) {
+		for (unsigned i = 0; i < own2.size(); i++) {
+			int t = own2[i];
+			myCards2.insert(t);
+			mycounts2[card2level(t)]++;
+		}
+		for (unsigned i = 0; i < 3; i++)
+		{
+			landlordPublicCards.insert(publiccard[i]);
+			if (landlordPosition == myPosition2) {
+				myCards2.insert(publiccard[i]);
+				mycounts2[card2level(publiccard[i])]++;
+			}
+		}
+	}
 	turn2++;
+	CardCombo lastValidCombo2(last2.begin(), last2.end());
 	srand(time(nullptr));
 	stage2 = Stage::PLAYING;
-	play_read2();
+	CardCombo myAction = lastValidCombo2.findFirstValid(myCards2.begin(), myCards2.end());
 
-	CardCombo myAction = Play_Strategy2(lastValidCombo2.cards.begin(), lastValidCombo2.cards.end());
 	if ((myAction.comboType == CardComboType::PASS) || !checkValid(myAction.cards.begin(), myAction.cards.end(), lastValidCombo2.cards.begin(), lastValidCombo2.cards.end()))
 		return nullptr;
 	else
