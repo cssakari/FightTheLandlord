@@ -17,6 +17,8 @@ public:
     explicit progress(QWidget* parent=nullptr);
     ~progress();
     void anime();
+    void stop();
+    QParallelAnimationGroup *group;
 };
 
 #endif // PROGRESS_H

@@ -19,7 +19,7 @@ card1::card1(int n,int _color ,int _point,bool _emerged)
 card1::~card1(){}
 
 void card1::reshow(){
-    if(used) return;
+    if(used) this->hide();
     if(picked){
         if(!isend){
             this->resize(18,66);

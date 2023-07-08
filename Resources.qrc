@@ -114,5 +114,15 @@
         <file>p/cards/s10h.png</file>
         <file>p/cards/sjh.png</file>
         <file>p/cards/sqh.png</file>
+        <file>p/music/background.wav</file>
+        <file>files/settings.png</file>
+        <file>files/win.png</file>
+        <file>files/lose.png</file>
+        <file>files/homepage.jpg</file>
+        <file>files/genshin.png</file>
+        <file>files/draw.png</file>
+        <file>files/pay.jpg</file>
+        <file>files/uncle.png</file>
+        <file>p/cards/back2.png</file>
     </qresource>
 </RCC>

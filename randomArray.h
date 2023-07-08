@@ -5,8 +5,8 @@
 #include"ctime"
 #include"cstdlib"
 #include <algorithm>
-#define MAX 20000
-int Myarray[MAX];
+#define maxn 20000
+int Myarray[maxn];
 using namespace std;
 struct element{     //用来排序的数据结构
         int data;  // 数据
@@ -44,7 +44,7 @@ int cmp(const void *a,const void *b){   // 升序排序
 }
 void rand_of_n(int a[],int n){
     int i;
-    struct element ele[MAX];
+    struct element ele[maxn];
     srand((int)time(0));  // 初始化随机数种子
     for(i=0;i<n;i++){
         ele[i].data=rand();  // 随机生成一个数

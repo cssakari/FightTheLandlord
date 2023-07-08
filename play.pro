@@ -1,5 +1,4 @@
-QT       += core gui
-
+QT       += core gui multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,24 +11,29 @@ CONFIG += c++17
 SOURCES += \
     card1.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    progress.cpp \
+    reward.cpp
 
 HEADERS += \
+    AI.h \
     card1.h \
-    filesaved.h \
     mainwindow.h \
     player.h \
-    randomArray.h
+    progress.h \
+    randomArray.h \
+    reward.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    reward.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-
 RESOURCES += \
     Resources.qrc
-QT += multimedia
+
+DISTFILES +=

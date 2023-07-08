@@ -30,6 +30,7 @@ const QString cardpath_h_shift[5][14]={{"border-image:url(:/p/cards/sah.png) 0 4
     {"border-image:url(:/p/cards/dah.png) 0 44 0 0;","border-image:url(:/p/cards/d2h.png) 0 44 0 0;","border-image:url(:/p/cards/d3h.png) 0 44 0 0;","border-image:url(:/p/cards/d4h.png) 0 44 0 0;","border-image:url(:/p/cards/d5h.png) 0 44 0 0;","border-image:url(:/p/cards/d6h.png) 0 44 0 0;","border-image:url(:/p/cards/d7h.png) 0 44 0 0;","border-image:url(:/p/cards/d8h.png) 0 44 0 0;","border-image:url(:/p/cards/d9h.png) 0 44 0 0;","border-image:url(:/p/cards/d10h.png) 0 44 0 0;","border-image:url(:/p/cards/djh.png) 0 44 0 0;","border-image:url(:/p/cards/dqh.png) 0 44 0 0;","border-image:url(:/p/cards/dkh.png) 0 44 0 0;"},
     {"border-image:url(:/p/cards/bjh.png) 0 44 0 0;","border-image:url(:/p/cards/rjh.png) 0 44 0 0;"}
 };
+const QString backpath[10]={"border-image:url(:/p/cards/back.png);","border-image:url(:/p/cards/back2.png);"};
 class card1 : public QPushButton
 {
     Q_OBJECT
